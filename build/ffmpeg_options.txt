@@ -112,3 +112,16 @@
 --enable-cuda-nvcc
 --enable-libnpp
 --enable-libopenh264
+
+# Additional Custom Options
+--enable-nonfree
+--enable-protocol=file
+--enable-swscale
+--disable-w32threads
+--enable-pthreads
+--prefix=/mingw32/local-x264/posix
+--extra-ldflags="-static"
+--target-os=mingw32
+--arch=i686
+--enable-static
+--pkg-config-flags="--static"
