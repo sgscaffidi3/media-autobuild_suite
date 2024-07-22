@@ -1970,11 +1970,33 @@ _check=(avisynth/avisynth{,_c}.h
 if [[ $ffmpeg != no ]] && enabled avisynth &&
     do_vcs "$SOURCE_REPO_AVISYNTH"; then
     do_uninstall "${_check[@]}"
-    do_cmake -DHEADERS_ONLY=ON
+    do_cmake -DHEADERS_ONLY=ON -DCMAKE_INSTALL_PREFIX="$LOCALDESTDIR" -DBIN_INSTALL_DIR="$LOCALDESTDIR/bin-video"
+    do_make VersionGen install
     do_ninja VersionGen
     do_ninjainstall
     do_checkIfExist
 fi
+
+_check=(bin-video/avisynth{,_c}.h)
+if [[ $ffmpeg != no ]] && enabled avisynth &&
+    do_vcs "$SOURCE_REPO_AVS4X26X"; then
+    do_uninstall "${_check[@]}"
+    #./build.sh
+    #do_configure --bindir="$LOCALDESTDIR"/bin-video --enable-strip
+    VER=`git rev-list HEAD | wc -l`
+    echo "#define VERSION_GIT $VER" > version.h
+    gcc avs4x26x.c -s -O3 -std=gnu99 -ffast-math -Wl,--large-address-aware -oavs4x26x
+    gcc avs4x26x.c -s -Ofast -Wl,--large-address-aware -std=gnu99 -ffast-math -oavs4x26x-x64
+    cp avs4x26x.exe "$LOCALDESTDIR/bin-video"
+    cp avs4x26x-x64.exe  "$LOCALDESTDIR/bin-video"
+    #gcc avs4x26x.c -s -Ofast -oavs4x26x -Wl,--large-address-aware --3 -std=gnu99 -ffast-math -oavs4x26x-x64
+    #x86_64-w64-mingw32-gcc avs4x26x.c -s --3 -std=gnu99 -ffast-math -oavs4x26x-x64
+    #rm -f version.h
+    #do_make
+    #do_makeinstall
+    #do_checkIfExist
+fi
+
 
 _check=(libvulkan.a vulkan.pc vulkan/vulkan.h d3d{kmthk,ukmdt}.h)
 if { { [[ $ffmpeg != no ]] && enabled_any vulkan libplacebo; } ||
@@ -2397,6 +2419,7 @@ if [[ $mplayer = y ]] && check_mplayer_updates; then
     --extra-ldflags='-Wl,--allow-multiple-definition' --enable-{static,runtime-cpudetection} \
     --disable-{gif,cddb} "${faac_opts[@]}" --with-dvdread-config="$PKG_CONFIG dvdread" \
     --with-freetype-config="$PKG_CONFIG freetype2" --with-dvdnav-config="$PKG_CONFIG dvdnav" &&
+        do_make
         do_makeinstall && do_checkIfExist
     unset _notrequired faac_opts
 fi
