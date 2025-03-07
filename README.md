@@ -51,7 +51,7 @@ For information about the compiler environment see the wiki, there you also have
                 - needs non-GPL license
             - mbedtls (mingw-w64)
                 - preferred to gnutls if GPLv3 license is chosen
-            - gnutls (3.8.5)
+            - gnutls (3.8.9)
         - libass (git)
             - by default with DirectWrite backend
             - if --enable-fontconfig, fontconfig backend included
@@ -122,11 +122,13 @@ For information about the compiler environment see the wiki, there you also have
         - openal (git)
         - opencl (from system)
         - opengl (from system)
-        - vapoursynth (R68)
+        - vapoursynth (R70)
         - vulkan (git)
 
 - other tools
     - aom (git)
+    - av1an (git)
+        - requires an installed or portable copy of [64-bit Python 3.12.x](https://www.python.org/downloads/) and [Vapoursynth](https://github.com/vapoursynth/vapoursynth/releases/latest)
     - bmx (git)
     - curl (git) with WinSSL/LibreSSL/OpenSSL/mbedTLS/GnuTLS backend
     - cyanrip (git)
@@ -137,6 +139,8 @@ For information about the compiler environment see the wiki, there you also have
     - fdk-aac (git)
     - ffmbc (git) (unsupported)
     - flac (git)
+    - gifski (git)
+        - with optional built-in video support (ffmpeg 6.1)
     - haisrt tools (git)
     - jo (git)
     - jpeg-xl tools (git)
@@ -149,6 +153,18 @@ For information about the compiler environment see the wiki, there you also have
         - dav1d (dec only)
         - rav1e (enc only)
         - svt-av1 (enc only)
+    - libheif (git) with following encoders/decoders:
+        - x265 (enc only)
+        - kvazaar (enc only)
+        - libde265 (dec only)
+        - aom (enc/dec)
+        - dav1d (dec only)
+        - svt-av1 (enc only)
+        - vvenc & vvdec
+        - uvg266 (enc only)
+        - libjpeg (enc/dec)
+        - openh264 (dec only)
+        - uncompressed
     - libbdplus (git) (shared)
     - mediainfo cli (git)
     - mp4box (git)
@@ -167,7 +183,7 @@ For information about the compiler environment see the wiki, there you also have
             - rubberband (git snapshot)
             - uchardet (mingw-w64)
             - vulkan, shaderc, spirv-cross, libplacebo (git)
-            - vapoursynth (R52)
+            - vapoursynth (R70)
         - Full build (ffmpegChoice=4)
             - dvdnav (git)
             - libarchive (mingw-w64)

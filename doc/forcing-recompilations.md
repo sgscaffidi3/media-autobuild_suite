@@ -143,6 +143,7 @@ To recompile these, delete `<appname>.exe` in corresponding binary directories:
         djxl
         dssim
         dwebp
+        gifski
         idn2
         img2webp
         jxlinfo
@@ -171,6 +172,7 @@ To recompile these, delete `<appname>.exe` in corresponding binary directories:
     /bin-video
         aomdec
         aomenc
+        av1an
         avifdec
         avifenc
         bmxtranswrap
