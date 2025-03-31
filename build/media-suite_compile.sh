@@ -194,7 +194,7 @@ fi
 if [[ $gifski != n ]]; then
     if [[ $gifski = video ]]; then
         _check=("$LOCALDESTDIR"/opt/gifskiffmpeg/lib/pkgconfig/lib{av{codec,device,filter,format,util},swscale}.pc)
-        if flavor=gifski do_vcs "${ffmpegPath%%#*}#branch=release/6.1"; then
+        if flavor=gifski do_vcs "https://git.ffmpeg.org/ffmpeg.git#branch=release/6.1"; then
             do_uninstall "$LOCALDESTDIR"/opt/gifskiffmpeg
             [[ -f config.mak ]] && log "distclean" make distclean
             create_build_dir gifski
@@ -287,29 +287,35 @@ if [[ $mplayer = y || $mpv = y ]] ||
     [[ $ffmpeg = sharedlibs ]] && _check+=(bin-video/libfreetype-6.dll libfreetype.dll.a)
     if do_vcs "$SOURCE_REPO_FREETYPE"; then
         do_uninstall include/freetype2 bin-global/freetype-config \
-            bin{,-video}/libfreetype-6.dll libfreetype.dll.a "${_check[@]}"
+            bin{,-video,-global}/libfreetype-6.dll libfreetype.dll.a "${_check[@]}"
         extracommands=(-D{harfbuzz,png,bzip2,brotli,zlib,tests}"=disabled")
         [[ $ffmpeg = sharedlibs ]] && extracommands+=(--default-library=both)
         do_mesoninstall global "${extracommands[@]}"
-        [[ $ffmpeg = sharedlibs ]] && do_install "$LOCALDESTDIR"/bin/libfreetype-6.dll bin-video/
+        [[ $ffmpeg = sharedlibs ]] && do_install "$LOCALDESTDIR"/bin-global/libfreetype-6.dll bin-video/
         do_checkIfExist
         unset extracommands
     fi
 
     _deps=(libfreetype.a)
     _check=(libfontconfig.a fontconfig.pc)
-    [[ $ffmpeg = sharedlibs ]] && enabled_any {lib,}fontconfig &&
-        do_removeOption "--enable-(lib|)fontconfig"
+    if [[ $ffmpeg = sharedlibs ]]; then
+        enabled_any {lib,}fontconfig && do_removeOption "--enable-(lib|)fontconfig"
+        _check+=(bin-global/libfontconfig-1.dll libfontconfig.dll.a)
+    fi
     if enabled_any {lib,}fontconfig &&
         do_vcs "$SOURCE_REPO_FONTCONFIG"; then
+        do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/fontconfig/0001-meson-change-default_library-to-default_both_librari.patch" am
         do_uninstall include/fontconfig "${_check[@]}"
         do_pacman_install gperf
         extracommands=()
         [[ $standalone = y ]] || extracommands+=(-Dtools=disabled)
+        [[ $ffmpeg = sharedlibs ]] && extracommands+=(--default-both-libraries=both)
         do_mesoninstall global -Ddoc=disabled -Dtests=disabled "${extracommands[@]}"
         do_checkIfExist
         unset extracommands
     fi
+    # Prevents ffmpeg from trying to link to a broken libfontconfig.dll.a
+    [[ $ffmpeg = sharedlibs ]] || do_uninstall bin-global/libfontconfig-1.dll libfontconfig.dll.a
 
     grep_or_sed iconv "$LOCALDESTDIR/lib/pkgconfig/fontconfig.pc" 's/Libs:.*/& -liconv/'
 
@@ -350,6 +356,7 @@ if [[ $mplayer = y || $mpv = y ]] ||
         enabled_any {lib,}fontconfig || extracommands+=(--disable-fontconfig)
         [[ $ffmpeg = sharedlibs ]] && extracommands+=(--disable-fontconfig --enable-shared)
         do_separate_confmakeinstall video "${extracommands[@]}"
+        [[ $ffmpeg = sharedlibs ]] && do_install "$LOCALDESTDIR"/bin/libass-9.dll bin-video/
         do_checkIfExist
         unset extracommands
     fi
@@ -572,7 +579,7 @@ if [[ $jpegxl = y ]] || { [[ $ffmpeg != no ]] && enabled libjxl; }; then
     do_pacman_install brotli lcms2
     _deps=(libgflags.a)
     _check=(libjxl{{,_threads}.a,.pc} jxl/decode.h)
-    [[ $jpegxl = y ]] && _check+=(bin-global/{{c,d}jxl,cjpegli,jxlinfo}.exe)
+    [[ $jpegxl = y ]] && _check+=(bin-global/{{c,d}jxl,{c,d}jpegli,jxlinfo}.exe)
     if do_vcs "$SOURCE_REPO_LIBJXL"; then
         do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/libjxl/0001-brotli-link-enc-before-common.patch" am
         do_uninstall "${_check[@]}" include/jxl
@@ -1971,7 +1978,7 @@ if [[ $av1an != n ]]; then
     [[ $av1an = shared ]] && av1an_bindir="bin-video/av1an/bin" && av1an_ffmpeg_prefix="bin-video/av1an"
 
     _check=("$LOCALDESTDIR"/"$av1an_ffmpeg_prefix"/lib/pkgconfig/lib{av{codec,device,filter,format,util},swscale}.pc)
-    if flavor=av1an do_vcs "${ffmpegPath%%#*}#branch=release/7.1"; then
+    if flavor=av1an do_vcs "https://git.ffmpeg.org/ffmpeg.git#branch=release/7.1"; then
         do_uninstall "$LOCALDESTDIR"/"$av1an_ffmpeg_prefix"
         [[ -f config.mak ]] && log "distclean" make distclean
         local av1an_ffmpeg_opts=("--enable-static" "--disable-shared")
@@ -2064,8 +2071,10 @@ _check=(bin-video/vvenc{,FF}app.exe
 if [[ $bits = 64bit && $vvenc = y ]] ||
     { [[ $ffmpeg != no && $bits = 64bit ]] && enabled libvvenc; } &&
     do_vcs "$SOURCE_REPO_LIBVVENC"; then
+    do_patch "https://github.com/fraunhoferhhi/vvenc/pull/522.patch" am
+    do_pacman_install nlohmann-json
     do_uninstall include/vvenc lib/cmake/vvenc "${_check[@]}"
-    do_cmakeinstall video -DVVENC_ENABLE_LINK_TIME_OPT=OFF -DVVENC_INSTALL_FULLFEATURE_APP=ON
+    do_cmakeinstall video -DVVENC_ENABLE_LINK_TIME_OPT=OFF -DVVENC_INSTALL_FULLFEATURE_APP=ON -DVVENC_ENABLE_THIRDPARTY_JSON=SYSTEM
     do_checkIfExist
 else
     pc_exists libvvenc || do_removeOption "--enable-libvvenc"
@@ -2078,6 +2087,8 @@ _check=(bin-video/vvdecapp.exe
 if [[ $bits = 64bit && $vvdec = y ]] ||
     { [[ $ffmpeg != no && $bits = 64bit ]] && enabled libvvdec; } &&
     do_vcs "$SOURCE_REPO_LIBVVDEC"; then
+    do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/vvdec/0001-TypeDef-cast-mem-cpy-set-this-.-with-void-to-silence.patch" am
+    do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/vvdec/0002-CodingStructure-cast-memset-with-void-to-silence-non.patch" am
     do_uninstall include/vvdec lib/cmake/vvdec "${_check[@]}"
     do_cmakeinstall video -DVVDEC_ENABLE_LINK_TIME_OPT=OFF -DVVDEC_INSTALL_VVDECAPP=ON
     do_checkIfExist
@@ -2371,6 +2382,8 @@ if [[ $ffmpeg != no ]]; then
         enabled libsvtav1 || do_removeOption FFMPEG_OPTS_SHARED "--enable-libsvtav1"
         enabled libsvtvp9 || do_removeOption FFMPEG_OPTS_SHARED "--enable-libsvtvp9"
 
+        enabled libvvdec && grep_and_sed FF_PROFILE libavcodec/libvvdec.c 's/FF_PROFILE/AV_PROFILE/g'
+
         if enabled openal &&
             pc_exists "openal"; then
             OPENAL_LIBS=$($PKG_CONFIG --libs openal)
@@ -2387,11 +2400,6 @@ if [[ $ffmpeg != no ]]; then
             do_pacman_install gmp
             grep_and_sed '__declspec(__dllimport__)' "$MINGW_PREFIX"/include/gmp.h \
                 's|__declspec\(__dllimport__\)||g' "$MINGW_PREFIX"/include/gmp.h
-        fi
-
-        if [[ ${#FFMPEG_OPTS[@]} -gt 35 ]]; then
-            # remove redundant -L and -l flags from extralibs
-            do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/ffmpeg/0001-configure-deduplicate-linking-flags.patch" am
         fi
 
         _patches=$(git rev-list $ff_base_commit.. --count)
@@ -2641,8 +2649,13 @@ if [[ $mplayer = y ]] && check_mplayer_updates; then
         git -C ffmpeg checkout -qf --no-track -B master origin/HEAD
     }
 
-    grep_or_sed windows libmpcodecs/ad_spdif.c '/#include "mp_msg.h/ a\#include <windows.h>'
-    grep_or_sed gnu11 configure 's/c11/gnu11/g'
+    do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/mplayer/0001-ae_lavc-fix-deprecated-warnings.patch"
+    do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/mplayer/0002-configure-fix-cddb-on-mingw-w64.patch"
+    do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/mplayer/0003-w32_common-add-casts-for-Wint-conversion.patch"
+    do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/mplayer/0004-configure-add-checking-libass-from-pkg-config.patch"
+
+    # grep_or_sed windows libmpcodecs/ad_spdif.c '/#include "mp_msg.h/ a\#include <windows.h>'
+    # grep_or_sed gnu11 configure 's/c11/gnu11/g'
     # shellcheck disable=SC2016
     sed -i '/%\$(EXESUF):/{n; s/\$(CC)/\$(CXX)/g};/mencoder$(EXESUF)/{n; s/\$(CC)/\$(CXX)/g}' Makefile
 
@@ -2656,6 +2669,7 @@ if [[ $mplayer = y ]] && check_mplayer_updates; then
     --with-freetype-config="$PKG_CONFIG freetype2" --with-dvdnav-config="$PKG_CONFIG dvdnav" &&
         do_make
         do_makeinstall CXX="$CXX" && do_checkIfExist
+
     unset _notrequired faac_opts
 fi
 
@@ -2672,7 +2686,7 @@ if [[ $mpv != n ]] && pc_exists libavcodec libavformat libswscale libavfilter; t
         do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/LuaJIT/0002-win32-UTF-8-Remove-va-arg-and-.-and-unused-functions.patch" am
         do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/LuaJIT/0003-make-don-t-override-user-provided-CC.patch" am
         do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/LuaJIT/0004-pkgconfig-fix-pkg-config-file-for-mingw64.patch" am
-        do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/LuaJIT/0005-revert-rolling-release-parts-in-Makefile.patch" am
+        do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/LuaJIT/0005-Undo-rolling-release-stuff-since-it-s-not-useful-to-.patch" am
         sed -i "s|export PREFIX= /usr/local|export PREFIX=${LOCALDESTDIR}|g" Makefile
         sed -i "s|^prefix=.*|prefix=$LOCALDESTDIR|" etc/luajit.pc
         _luajit_args=("PREFIX=$LOCALDESTDIR" "INSTALL_BIN=$LOCALDESTDIR/bin-global" "INSTALL_TNAME=luajit.exe")
@@ -2808,12 +2822,15 @@ if [[ $mpv != n ]] && pc_exists libavcodec libavformat libswscale libavfilter; t
 
         extra_script pre configure
         # -Wno-incompatible-pointer-types there until we can move to a newer version of mpv and fix it properly.
+        # Make sure that ccache has a .exe suffix as waf looks for the compiler by looking at PATH and appending `split[0]`
+        # and checking each result if it's a path and executable. Thus `G:\\MABS\\msys64\\mingw32\\bin\\ccache` would fail.
         CFLAGS+=" ${mpv_cflags[*]} -Wno-int-conversion -Wno-incompatible-pointer-types" LDFLAGS+=" ${mpv_ldflags[*]}" \
             RST2MAN="${MINGW_PREFIX}/bin/rst2man" \
             RST2HTML="${MINGW_PREFIX}/bin/rst2html" \
             RST2PDF="${MINGW_PREFIX}/bin/rst2pdf2" \
-            PKG_CONFIG="$LOCALDESTDIR/bin/ab-pkg-config" \
+            PKG_CONFIG="${MINGW_PREFIX}/bin/pkgconf.exe --keep-system-cflags --static" \
             WAF_NO_PREFORK=1 \
+            CC="${CC#ccache }.exe" CXX="${CXX#ccache }.exe" \
             log configure "$MINGW_PREFIX"/bin/python waf configure \
             "--prefix=$LOCALDESTDIR" "--bindir=$LOCALDESTDIR/bin-video" \
             "${MPV_OPTS[@]}"
