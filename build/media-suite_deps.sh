@@ -3,7 +3,7 @@
 # Dependency References
 SOURCE_REPO_AMF=https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git
 SOURCE_REPO_ANGLE=https://chromium.googlesource.com/angle/angle
-SOURCE_REPO_ARRIB24=https://github.com/nkoriyama/aribb24.git
+SOURCE_REPO_ARRIB24=https://github.com/sgscaffidi3/aribb24.git
 SOURCE_REPO_AV1AN=https://github.com/master-of-zen/Av1an.git
 SOURCE_REPO_AVISYNTH=https://github.com/AviSynth/AviSynthPlus.git
 SOURCE_REPO_AVS4X26X=https://github.com/sgscaffidi3/avs4x26x.git
