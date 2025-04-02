@@ -24,7 +24,7 @@ SOURCE_REPO_FFMBC=https://github.com/bcoudurier/FFmbc.git#branch=ffmbc # no othe
 SOURCE_REPO_FFMS2=https://github.com/FFMS/ffms2.git
 SOURCE_REPO_FFNVCODEC=https://git.videolan.org/git/ffmpeg/nv-codec-headers.git
 SOURCE_REPO_FLAC=https://github.com/xiph/flac.git
-SOURCE_REPO_FLITE=https://github.com/festvox/flite.git
+SOURCE_REPO_FLITE=https://github.com/sgscaffidi3/flite.git
 SOURCE_REPO_FONTCONFIG=https://gitlab.freedesktop.org/fontconfig/fontconfig.git#tag=LATEST
 SOURCE_REPO_FREETYPE=https://github.com/freetype/freetype.git#tag=LATEST
 SOURCE_REPO_FREI0R=https://github.com/dyne/frei0r.git
