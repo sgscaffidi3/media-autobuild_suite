@@ -2047,7 +2047,6 @@ if [[ $bits = 64bit && $vvc = y ]] &&
     # probably not of upstream's interest because of how experimental the codec is
     do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/VVCSoftware_VTM/0002-cmake-allow-installing-apps.patch" am
     do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/VVCSoftware_VTM/0003-CMake-add-USE_CCACHE-variable-to-disable-using-found.patch" am
-    do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/SPIRV-Cross/spirv_compiler.patch" am
     _notrequired=true
     # install to own dir because the binaries' names are too generic
     do_cmakeinstall -DCMAKE_INSTALL_BINDIR="$LOCALDESTDIR"/bin-video/vvc \
@@ -2219,6 +2218,7 @@ if { { [[ $mpv != n ]]  && ! mpv_disabled libplacebo; } ||
      { [[ $ffmpeg != no ]] && enabled_any libplacebo libglslang; } } &&
     do_vcs "$SOURCE_REPO_GLSLANG"; then
     do_uninstall libHLSL.a "${_check[@]}"
+    do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/SPIRV-Cross/spirv_compiler.patch" am
     log dependencies "$MINGW_PREFIX"/bin/python ./update_glslang_sources.py
     do_cmakeinstall -DUNIX=OFF
     do_checkIfExist
