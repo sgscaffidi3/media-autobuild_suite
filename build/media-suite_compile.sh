@@ -2218,7 +2218,6 @@ if { { [[ $mpv != n ]]  && ! mpv_disabled libplacebo; } ||
      { [[ $ffmpeg != no ]] && enabled_any libplacebo libglslang; } } &&
     do_vcs "$SOURCE_REPO_GLSLANG"; then
     do_uninstall libHLSL.a "${_check[@]}"
-    do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/SPIRV-Cross/spirv_compiler.patch" am
     log dependencies "$MINGW_PREFIX"/bin/python ./update_glslang_sources.py
     do_cmakeinstall -DUNIX=OFF
     do_checkIfExist
@@ -2377,6 +2376,9 @@ if [[ $ffmpeg != no ]]; then
         fi
         if enabled libsvtav1; then
             do_patch "https://code.ffmpeg.org/FFmpeg/FFmpeg/pulls/12.patch" am
+        fi
+        if enabled libglslang; then
+            do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/SPIRV-Cross/spirv_compiler.patch" am
         fi
 
         enabled libsvthevc || do_removeOption FFMPEG_OPTS_SHARED "--enable-libsvthevc"
