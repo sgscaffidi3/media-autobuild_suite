@@ -2378,7 +2378,7 @@ if [[ $ffmpeg != no ]]; then
             do_patch "https://code.ffmpeg.org/FFmpeg/FFmpeg/pulls/12.patch" am
         fi
         if enabled libglslang; then
-            do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/SPIRV-Cross/spirv_compiler.patch" am
+            do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/SPIRV-Cross/spirv_compiler_patch.patch" am
         fi
 
         enabled libsvthevc || do_removeOption FFMPEG_OPTS_SHARED "--enable-libsvthevc"
