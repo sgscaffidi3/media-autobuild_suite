@@ -1275,6 +1275,7 @@ do_patch() {
 
     if [[ -f $patchName ]]; then
         if $am; then
+            git update-index --refresh > /dev/null 2>&1 &&
             git apply -3 --check --ignore-space-change --ignore-whitespace "$patchName" > /dev/null 2>&1 &&
                 git am -q -3 --ignore-whitespace --no-gpg-sign "$patchName" > /dev/null 2>&1 &&
                 return 0
