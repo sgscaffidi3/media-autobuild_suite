@@ -11,7 +11,7 @@
 #--enable-lcms2
 #--enable-libarchive
 #--enable-libavdevice
-#--enable-shaderc
+--enable-shaderc
 #--enable-spirv-cross
 #--enable-d3d11
 #--enable-jpeg
