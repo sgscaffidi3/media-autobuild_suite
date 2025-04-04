@@ -1520,7 +1520,7 @@ if [[ $ffmpeg != no ]] && enabled libvidstab; then
     _check=(libvidstab.a vidstab.pc)
     if do_vcs "$SOURCE_REPO_VIDSTAB" vidstab; then
         do_uninstall include/vid.stab "${_check[@]}"
-        do_cmakeinstall
+        do_cmakeinstall -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         do_checkIfExist
     fi
 fi
