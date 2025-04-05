@@ -1552,7 +1552,7 @@ if [[ $ffmpeg != no ]] && enabled_any frei0r ladspa; then
         sed -i 's/find_package (Cairo)//' "CMakeLists.txt"
         do_uninstall lib/frei0r-1 "${_check[@]}"
         do_pacman_install gavl
-        do_cmakeinstall -DWITHOUT_OPENCV=on
+        do_cmakeinstall -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DWITHOUT_OPENCV=on
         do_checkIfExist
     fi
 fi
