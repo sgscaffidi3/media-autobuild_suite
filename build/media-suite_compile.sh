@@ -1692,7 +1692,7 @@ if [[ $x264 != no ]] ||
             if do_vcs "$SOURCE_REPO_FFMS2"; then
                 do_uninstall "${_check[@]}"
                 sed -i 's/Cflags.*/& -DFFMS_STATIC/' ffms2.pc.in
-                do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/ffms2/0001-ffmsindex-fix-linking-issues.patch" am
+                do_patch "https://raw.githubusercontent.com/sgscaffidi3/mabs-patches/refs/heads/master/ffms2/ffms2_fix_linking.patch" am
                 mkdir -p src/config
                 do_autoreconf
                 do_separate_confmakeinstall video --prefix="$LOCALDESTDIR/opt/lightffmpeg"
