@@ -1509,7 +1509,7 @@ if [[ $mediainfo = y ]]; then
         [[ -f Makefile ]] && log distclean make distclean
         do_configure --disable-shared --bindir="$LOCALDESTDIR/bin-video" \
             --enable-staticlibs
-        do_makeinstall
+        do_makeinstall -stdlib=libstdc++
         do_checkIfExist
     fi
     [[ $curl = openssl ]] && hide_libressl -R
