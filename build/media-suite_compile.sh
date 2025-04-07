@@ -1066,7 +1066,7 @@ if { { [[ $ffmpeg != no ]] &&
     do_vcs "$SOURCE_REPO_OPENAL"; then
     do_uninstall "${_check[@]}"
     do_patch "https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/openal-soft/0001-CMake-Fix-issues-for-mingw-w64.patch" am
-    do_cmakeinstall -DLIBTYPE=STATIC -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=OFF
+    do_cmakeinstall -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DLIBTYPE=STATIC -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=OFF
     sed -i 's/Libs.private.*/& -luuid -lole32/' "$LOCALDESTDIR/lib/pkgconfig/openal.pc" # uuid is for FOLDERID_* stuff
     do_checkIfExist
     unset _mingw_patches
@@ -1773,7 +1773,7 @@ if [[ ! $x265 = n ]] && do_vcs "$SOURCE_REPO_X265"; then
         extra_script pre cmake
         log "cmake" cmake "$(get_first_subdir -f)/source" -G Ninja \
         -DCMAKE_INSTALL_PREFIX="$LOCALDESTDIR" -DBIN_INSTALL_DIR="$LOCALDESTDIR/bin-video" \
-        -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGH_BIT_DEPTH=ON \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGH_BIT_DEPTH=ON \
         -DENABLE_HDR10_PLUS=ON $xpsupport -DCMAKE_CXX_COMPILER="$LOCALDESTDIR/bin/${CXX#ccache }.bat" \
         -DCMAKE_TOOLCHAIN_FILE="$LOCALDESTDIR/etc/toolchain.cmake" "$@"
         extra_script post cmake
@@ -1879,7 +1879,7 @@ if enabled libsrt; then
     [[ $standalone = y ]] && _check+=(bin-video/srt-live-transmit.exe)
     if do_vcs "$SOURCE_REPO_SRT"; then
         hide_libressl
-        do_cmakeinstall video -DENABLE_SHARED=off -DENABLE_SUFLIP=off \
+        do_cmakeinstall video -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_SHARED=off -DENABLE_SUFLIP=off \
             -DENABLE_EXAMPLES=off -DUSE_OPENSSL_PC=on -DUSE_STATIC_LIBSTDCXX=ON
         hide_libressl -R
         do_checkIfExist
@@ -2131,7 +2131,7 @@ if [[ $ffmpeg != no ]] && enabled avisynth &&
     do_vcs "$SOURCE_REPO_AVISYNTH"; then
     do_uninstall "${_check[@]}"
     do_cmake -DHEADERS_ONLY=ON -DCMAKE_INSTALL_PREFIX="$LOCALDESTDIR" -DBIN_INSTALL_DIR="$LOCALDESTDIR/bin-video"
-    do_make VersionGen install
+    #do_make VersionGen install
     do_ninja VersionGen
     do_ninjainstall
     do_checkIfExist
