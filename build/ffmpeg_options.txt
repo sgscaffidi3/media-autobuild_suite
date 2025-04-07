@@ -103,7 +103,7 @@
 --enable-libdavs2
 --enable-libxavs2
 --enable-libuavs3d
---enable-libplacebo
+#--enable-libplacebo
 --enable-libjxl
 
 # Full plus options that add shared dependencies
